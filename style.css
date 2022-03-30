@@ -27,8 +27,15 @@ body > h1 {
 }
 .gameBoard > div {
   background-color: white;
-  font-size: 120px;
+  font-size: 100px;
   font-family: "Courier New", Courier, monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.maxsize {
+  height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
