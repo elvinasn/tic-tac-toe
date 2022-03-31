@@ -5,6 +5,7 @@
   margin: 0;
   box-sizing: border-box;
   user-select: none;
+  letter-spacing: 3px;
 }
 body {
   background-color: lightblue;
@@ -21,6 +22,64 @@ body > p {
   font-size: 3.5rem;
   margin-top: 20px;
 }
+input[type="text"] {
+  font-size: 3rem;
+  margin-bottom: 30px;
+  padding: 10px;
+  font-family: "Smokum", cursive;
+}
+label {
+  font-size: 2em;
+}
+.buttons {
+  display: flex;
+  flex-direction: column;
+  transition: all 2s linear;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.button-chose {
+  padding: 0.8em 1.8em;
+  border: 2px solid black;
+  position: relative;
+  overflow: hidden;
+  background-color: transparent;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 3rem;
+  transition: 0.3s;
+  z-index: 1;
+  color: black;
+  margin-top: 50px;
+  width: 500px;
+  cursor: pointer;
+  font-family: "Smokum", cursive;
+}
+
+.button-chose::before {
+  content: "";
+  width: 0;
+  height: 400%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: black;
+  transition: 0.5s ease;
+  display: block;
+  z-index: -1;
+}
+
+.button-chose:hover::before {
+  width: 105%;
+}
+
+.button-chose:hover {
+  color: lightblue;
+}
 .gameBoard {
   display: grid;
   width: 415px;
@@ -32,26 +91,31 @@ body > p {
 .gameBoard > div {
   background-color: white;
   font-size: 100px;
-  font-family: "Courier New", Courier, monospace;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
-.restart {
+.play {
   margin-bottom: 30px;
   padding: 10px 30px;
   border-radius: 10px;
   border: 3px solid white;
   cursor: pointer;
   transition: 0.3s ease;
-  font-size: 1.3rem;
+  font-size: 2rem;
   background-color: white;
+  font-family: "Smokum", cursive;
 }
-.restart:hover {
+.play:not(:disabled):hover {
   transform: scale(1.05);
   background-color: inherit;
   color: white;
   font-weight: 700;
+}
+.play:disabled {
+  background-color: #ddd;
+  cursor: initial;
 }
 .maxsize {
   height: 100%;
@@ -71,4 +135,7 @@ body > p {
 }
 .no-left {
   border-left: none;
+}
+.hidden {
+  display: none;
 }

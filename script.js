@@ -1,5 +1,8 @@
 const body = document.querySelector("body");
-const restart = document.querySelector(".restart");
+const buttons = document.querySelector(".buttons");
+const ai = document.querySelector(".AI");
+const pvp = document.querySelector(".PVP");
+const form = document.querySelector(".form");
 
 const Person = (name, sign, turn) => {
   const getName = () => name;
@@ -13,13 +16,21 @@ const Person = (name, sign, turn) => {
   };
   return { getName, getSign, getTurn, changeTurn, setTurn };
 };
-
-const playerOne = Person("Elvinas", "X", true);
-const playerTwo = Person("Lukas", "O", false);
+let playerOne = Person("Elvinas", "X");
+let playerTwo = Person("Gustautas", "O");
 
 const GameController = (() => {
+  let gameMode;
+  const setGameMode = (mode) => (gameMode = mode);
+  const restart = document.createElement("button");
+  restart.classList.add("play");
+  restart.textContent = "RESTART";
+  restart.addEventListener("click", () => {
+    EventHandler.HandleRestartButton();
+  });
   let previousGameTurn = false;
   const beginGame = () => {
+    body.appendChild(restart);
     playerOne.setTurn(!previousGameTurn);
     playerTwo.setTurn(previousGameTurn);
     GameBoard.clearGameBoard();
@@ -46,7 +57,7 @@ const GameController = (() => {
       return true;
     }
   };
-  return { beginGame, checkIfFinished };
+  return { beginGame, checkIfFinished, setGameMode };
 })();
 
 const GameBoard = (() => {
@@ -168,8 +179,51 @@ const GameBoard = (() => {
 })();
 const displayController = (() => {
   const restart = document.createElement("button");
+
+  const play = document.createElement("button");
+  play.textContent = "PLAY";
+  play.classList.add("play");
+  play.disabled = true;
+
+  const playerOneLabel = document.createElement(`label`);
+  playerOneLabel.setAttribute("for", "one");
+  playerOneLabel.textContent = "Player one(X) name:";
+
+  const playerOneInput = document.createElement(`input`);
+  playerOneInput.setAttribute("type", "text");
+  playerOneInput.setAttribute("id", "one");
+
+  const playerTwoLabel = document.createElement(`label`);
+  playerTwoLabel.setAttribute("for", "two");
+  playerTwoLabel.textContent = "Player two(O) name:";
+
+  const playerTwoInput = document.createElement(`input`);
+  playerTwoInput.setAttribute("type", "text");
+  playerTwoInput.setAttribute("id", "two");
+
   restart.textContent = "Play again?";
-  restart.classList.add("restart");
+  restart.classList.add("play");
+
+  playerOneInput.addEventListener("input", () => {
+    if (playerOneInput.value != "" && playerTwoInput.value != "") {
+      play.disabled = false;
+    } else {
+      play.disabled = true;
+    }
+  });
+  playerTwoInput.addEventListener("input", () => {
+    if (playerOneInput.value != "" && playerTwoInput.value != "") {
+      play.disabled = false;
+    } else {
+      play.disabled = true;
+    }
+  });
+  play.addEventListener("click", () => {
+    playerOne = Person(playerOneInput.value, "X");
+    playerTwo = Person(playerTwoInput.value, "O");
+    form.classList.add("hidden");
+    GameController.beginGame();
+  });
 
   const container = document.createElement("div");
   const result = document.createElement("p");
@@ -225,6 +279,14 @@ const displayController = (() => {
     body.appendChild(turn);
   };
 
+  const displayPVP = () => {
+    form.appendChild(playerOneLabel);
+    form.appendChild(playerOneInput);
+    form.appendChild(playerTwoLabel);
+    form.appendChild(playerTwoInput);
+    form.appendChild(play);
+  };
+
   return {
     updateGameBoard,
     container,
@@ -233,6 +295,7 @@ const displayController = (() => {
     removeResultAndButton,
     displayTurn,
     removeTurn,
+    displayPVP,
   };
 })();
 
@@ -264,11 +327,15 @@ const EventHandler = (() => {
 displayController.container.addEventListener("click", (e) =>
   EventHandler.HandlePlayerMove(e)
 );
-displayController.restart.addEventListener("click", () => {
-  EventHandler.HandleRestartButton();
+displayController.restart.addEventListener("click", () =>
+  EventHandler.HandleRestartButton()
+);
+ai.addEventListener("click", () => {
+  buttons.classList.add("hidden");
+  GameController.setGameMode("ai");
 });
-restart.addEventListener("click", () => {
-  EventHandler.HandleRestartButton();
+pvp.addEventListener("click", () => {
+  buttons.classList.add("hidden");
+  GameController.setGameMode("pvp");
+  displayController.displayPVP();
 });
-
-GameController.beginGame();
