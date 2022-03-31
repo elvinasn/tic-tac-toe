@@ -17,6 +17,10 @@ body {
 body > h1 {
   font-size: 7rem;
 }
+body > p {
+  font-size: 3.5rem;
+  margin-top: 20px;
+}
 .gameBoard {
   display: grid;
   width: 415px;
@@ -32,6 +36,22 @@ body > h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.restart {
+  margin-bottom: 30px;
+  padding: 10px 30px;
+  border-radius: 10px;
+  border: 3px solid white;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-size: 1.3rem;
+  background-color: white;
+}
+.restart:hover {
+  transform: scale(1.05);
+  background-color: inherit;
+  color: white;
+  font-weight: 700;
 }
 .maxsize {
   height: 100%;
