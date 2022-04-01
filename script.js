@@ -22,6 +22,7 @@ let playerTwo = Person("Gustautas", "O");
 const GameController = (() => {
   let gameMode;
   const setGameMode = (mode) => (gameMode = mode);
+  const getGameMode = () => gameMode;
   const restart = document.createElement("button");
   restart.classList.add("play");
   restart.textContent = "RESTART";
@@ -57,7 +58,17 @@ const GameController = (() => {
       return true;
     }
   };
-  return { beginGame, checkIfFinished, setGameMode };
+
+  const removeRestart = () => {
+    body.removeChild(restart);
+  };
+  return {
+    beginGame,
+    checkIfFinished,
+    setGameMode,
+    getGameMode,
+    removeRestart,
+  };
 })();
 
 const GameBoard = (() => {
@@ -179,11 +190,16 @@ const GameBoard = (() => {
 })();
 const displayController = (() => {
   const restart = document.createElement("button");
+  restart.textContent = "Play again?";
+  restart.classList.add("play");
+
+  const mainDisplay = document.createElement("button");
+  mainDisplay.textContent = "Go to start menu";
+  mainDisplay.classList.add("play");
 
   const play = document.createElement("button");
   play.textContent = "PLAY";
   play.classList.add("play");
-  play.disabled = true;
 
   const playerOneLabel = document.createElement(`label`);
   playerOneLabel.setAttribute("for", "one");
@@ -201,11 +217,11 @@ const displayController = (() => {
   playerTwoInput.setAttribute("type", "text");
   playerTwoInput.setAttribute("id", "two");
 
-  restart.textContent = "Play again?";
-  restart.classList.add("play");
-
   playerOneInput.addEventListener("input", () => {
-    if (playerOneInput.value != "" && playerTwoInput.value != "") {
+    if (
+      (playerOneInput.value != "" && GameController.getGameMode() === "ai") ||
+      playerTwoInput.value != ""
+    ) {
       play.disabled = false;
     } else {
       play.disabled = true;
@@ -220,9 +236,22 @@ const displayController = (() => {
   });
   play.addEventListener("click", () => {
     playerOne = Person(playerOneInput.value, "X");
-    playerTwo = Person(playerTwoInput.value, "O");
+    playerTwo = Person(
+      GameController.getGameMode() === "ai" ? "AI" : playerTwoInput.value,
+      "0"
+    );
+    console.log(playerTwo.getName());
     form.classList.add("hidden");
     GameController.beginGame();
+    playerOneInput.value = "";
+    playerTwoInput.value = "";
+  });
+
+  mainDisplay.addEventListener("click", () => {
+    container.classList.add("hidden");
+    removeResultAndButton();
+    GameController.removeRestart();
+    toggleButtons();
   });
 
   const container = document.createElement("div");
@@ -230,17 +259,20 @@ const displayController = (() => {
   const turn = document.createElement("p");
 
   const updateGameBoard = (gameBoard) => {
+    container.classList.remove("hidden");
     container.innerHTML = "";
     container.classList.add("gameBoard");
     for (let i = 0; i < gameBoard.length; i++) {
       for (let j = 0; j < gameBoard[i].length; j++) {
         const rect = document.createElement("div");
+        rect.classList.add("pressable");
         rect.dataset.xcoord = i;
         rect.dataset.ycoord = j;
         const para = document.createElement("p");
         if (gameBoard[i][j] !== null) {
           para.textContent = gameBoard[i][j].getSign();
           para.classList.add("maxsize");
+          rect.classList.remove("pressable");
         }
         rect.appendChild(para);
         container.appendChild(rect);
@@ -257,6 +289,7 @@ const displayController = (() => {
     }
     body.appendChild(result);
     body.appendChild(restart);
+    body.appendChild(mainDisplay);
   };
 
   const removeResultAndButton = () => {
@@ -266,6 +299,9 @@ const displayController = (() => {
     }
     if (Array.from(body.childNodes).includes(result)) {
       body.removeChild(result);
+    }
+    if (Array.from(body.childNodes).includes(mainDisplay)) {
+      body.removeChild(mainDisplay);
     }
   };
 
@@ -280,11 +316,30 @@ const displayController = (() => {
   };
 
   const displayPVP = () => {
+    if (playerOneInput.value === "" || playerTwoInput.value === "") {
+      play.disabled = true;
+    }
+    form.innerHTML = "";
     form.appendChild(playerOneLabel);
     form.appendChild(playerOneInput);
     form.appendChild(playerTwoLabel);
     form.appendChild(playerTwoInput);
     form.appendChild(play);
+  };
+
+  const displayAI = () => {
+    if (playerOneInput.value === "") {
+      play.disabled = true;
+    }
+
+    form.innerHTML = "";
+    form.appendChild(playerOneLabel);
+    form.appendChild(playerOneInput);
+    form.appendChild(play);
+  };
+
+  const toggleButtons = () => {
+    buttons.classList.toggle("hidden");
   };
 
   return {
@@ -296,6 +351,8 @@ const displayController = (() => {
     displayTurn,
     removeTurn,
     displayPVP,
+    displayAI,
+    toggleButtons,
   };
 })();
 
@@ -331,11 +388,14 @@ displayController.restart.addEventListener("click", () =>
   EventHandler.HandleRestartButton()
 );
 ai.addEventListener("click", () => {
-  buttons.classList.add("hidden");
+  form.classList.remove("hidden");
+  displayController.toggleButtons();
   GameController.setGameMode("ai");
+  displayController.displayAI();
 });
 pvp.addEventListener("click", () => {
-  buttons.classList.add("hidden");
+  form.classList.remove("hidden");
+  displayController.toggleButtons();
   GameController.setGameMode("pvp");
   displayController.displayPVP();
 });
