@@ -25,12 +25,7 @@ const GameController = (() => {
   const setGameMode = (mode) => (gameMode = mode);
   const getGameMode = () => gameMode;
   const setLevel = (lev) => (level = lev);
-  const restart = document.createElement("button");
-  restart.classList.add("play");
-  restart.textContent = "RESTART";
-  restart.addEventListener("click", () => {
-    EventHandler.HandleRestartButton();
-  });
+
   let previousGameTurn = false;
 
   const randomInt = (min, max) => {
@@ -38,13 +33,14 @@ const GameController = (() => {
   };
 
   const beginGame = () => {
-    body.appendChild(restart);
+    body.appendChild(displayController.mainDisplay);
+    body.appendChild(displayController.restart);
     playerOne.setTurn(!previousGameTurn);
     playerTwo.setTurn(previousGameTurn);
     GameBoard.clearGameBoard();
     displayController.updateGameBoard(GameBoard.getGameBoard(), body);
     displayController.displayTurn(playerOne, playerTwo);
-    displayController.removeResultAndButton();
+    displayController.removeResults();
     previousGameTurn = !previousGameTurn;
     if (gameMode === "ai" && playerTwo.getTurn()) {
       MoveAI();
@@ -67,10 +63,6 @@ const GameController = (() => {
       endOfGame = true;
       return true;
     }
-  };
-
-  const removeRestart = () => {
-    body.removeChild(restart);
   };
 
   const evaluate = (b) => {
@@ -154,7 +146,6 @@ const GameController = (() => {
           j = randomInt(0, 2);
         }
       } else {
-        console.log(GameBoard.getGameBoard());
         let move = findBestMove(GameBoard.getGameBoard());
         i = move[1];
         j = move[0];
@@ -180,7 +171,6 @@ const GameController = (() => {
     checkIfFinished,
     setGameMode,
     getGameMode,
-    removeRestart,
     setLevel,
     MoveAI,
   };
@@ -293,24 +283,36 @@ const GameBoard = (() => {
 })();
 const displayController = (() => {
   const restart = document.createElement("button");
-  restart.textContent = "Play again?";
-  restart.classList.add("play");
+  restart.classList.add("basic-button");
+  restart.textContent = "RESTART";
+
+  restart.addEventListener("click", () => {
+    EventHandler.HandleRestartButton();
+  });
 
   const mainDisplay = document.createElement("button");
-  mainDisplay.textContent = "Go to start menu";
-  mainDisplay.classList.add("play");
+  mainDisplay.classList.add("basic-button");
+  mainDisplay.textContent = "GO TO START PAGE";
+
+  mainDisplay.addEventListener("click", () => {
+    EventHandler.HandleMainDisplay();
+  });
+
+  const back = document.createElement("button");
+  back.textContent = "GO BACK";
+  back.classList.add("basic-button");
 
   const easy = document.createElement("button");
   easy.textContent = "EASY MODE";
-  easy.classList.add("play");
+  easy.classList.add("basic-button");
 
   const hard = document.createElement("button");
   hard.textContent = "HARD MODE";
-  hard.classList.add("play");
+  hard.classList.add("basic-button");
 
   const play = document.createElement("button");
   play.textContent = "PLAY";
-  play.classList.add("play");
+  play.classList.add("basic-button");
 
   const playerOneLabel = document.createElement(`label`);
   playerOneLabel.setAttribute("for", "one");
@@ -366,11 +368,8 @@ const displayController = (() => {
     EventHandler.HandleStart();
   });
 
-  mainDisplay.addEventListener("click", () => {
-    container.classList.add("hidden");
-    removeResultAndButton();
-    GameController.removeRestart();
-    toggleButtons();
+  back.addEventListener("click", () => {
+    EventHandler.HandleMainDisplay();
   });
 
   const container = document.createElement("div");
@@ -403,24 +402,32 @@ const displayController = (() => {
   const displayResult = (isDraw, name) => {
     if (isDraw) {
       result.textContent = "It's a draw!";
+      Array.from(container.childNodes).forEach((div) => {
+        div.classList.add("draw");
+      });
     } else {
       result.textContent = `${name} has won!`;
+      Array.from(container.childNodes).forEach((div) => {
+        div.classList.add("won");
+      });
     }
     body.appendChild(result);
-    body.appendChild(restart);
-    body.appendChild(mainDisplay);
   };
-
-  const removeResultAndButton = () => {
-    Array.from(body.childNodes).includes;
-    if (Array.from(body.childNodes).includes(restart)) {
-      body.removeChild(restart);
-    }
+  const removeResults = () => {
     if (Array.from(body.childNodes).includes(result)) {
       body.removeChild(result);
     }
+  };
+  const removeFromMainDisplay = () => {
+    removeResults();
     if (Array.from(body.childNodes).includes(mainDisplay)) {
       body.removeChild(mainDisplay);
+    }
+    if (Array.from(body.childNodes).includes(restart)) {
+      body.removeChild(restart);
+    }
+    if (Array.from(body.childNodes).includes(turn)) {
+      body.removeChild(turn);
     }
   };
 
@@ -445,6 +452,7 @@ const displayController = (() => {
     form.appendChild(playerTwoLabel);
     form.appendChild(playerTwoInput);
     form.appendChild(play);
+    form.appendChild(back);
   };
 
   const displayAI = () => {
@@ -458,6 +466,7 @@ const displayController = (() => {
     form.appendChild(playerOneInput);
     form.appendChild(easy);
     form.appendChild(hard);
+    form.appendChild(back);
   };
 
   const toggleButtons = () => {
@@ -465,13 +474,15 @@ const displayController = (() => {
   };
 
   return {
+    restart,
+    mainDisplay,
     playerOneInput,
     playerTwoInput,
     updateGameBoard,
     container,
     displayResult,
-    restart,
-    removeResultAndButton,
+    removeResults,
+    removeFromMainDisplay,
     displayTurn,
     removeTurn,
     displayPVP,
@@ -516,18 +527,27 @@ const EventHandler = (() => {
       "0"
     );
     form.classList.add("hidden");
-    GameController.beginGame();
     displayController.playerOneInput.value = "";
     displayController.playerTwoInput.value = "";
+    GameController.beginGame();
   };
-  return { HandlePlayerMove, HandleRestartButton, HandleStart };
+
+  const HandleMainDisplay = () => {
+    displayController.container.classList.add("hidden");
+    form.classList.add("hidden");
+    displayController.removeFromMainDisplay();
+    displayController.toggleButtons();
+  };
+  return {
+    HandlePlayerMove,
+    HandleRestartButton,
+    HandleStart,
+    HandleMainDisplay,
+  };
 })();
 
 displayController.container.addEventListener("click", (e) =>
   EventHandler.HandlePlayerMove(e)
-);
-displayController.restart.addEventListener("click", () =>
-  EventHandler.HandleRestartButton()
 );
 ai.addEventListener("click", () => {
   form.classList.remove("hidden");

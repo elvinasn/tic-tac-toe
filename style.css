@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Smokum&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 
 * {
   padding: 0;
@@ -12,8 +12,9 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 30px;
   align-items: center;
-  font-family: "Smokum", cursive;
+  font-family: "Bebas Neue", cursive;
 }
 body > h1 {
   font-size: 7rem;
@@ -26,10 +27,10 @@ input[type="text"] {
   font-size: 3rem;
   margin-bottom: 30px;
   padding: 10px;
-  font-family: "Smokum", cursive;
+  font-family: "Bebas Neue", cursive;
 }
 label {
-  font-size: 2em;
+  font-size: 2rem;
 }
 .buttons {
   display: flex;
@@ -56,7 +57,7 @@ label {
   margin-top: 50px;
   width: 530px;
   cursor: pointer;
-  font-family: "Smokum", cursive;
+  font-family: "Bebas Neue", cursive;
 }
 
 .button-chose::before {
@@ -103,24 +104,25 @@ label {
 .pressable:hover {
   opacity: 0.7;
 }
-.play {
+.basic-button {
   margin-bottom: 30px;
   padding: 10px 30px;
   border-radius: 10px;
   border: 3px solid white;
+  min-width: 250px;
   cursor: pointer;
   transition: 0.3s ease;
   font-size: 2rem;
   background-color: white;
-  font-family: "Smokum", cursive;
+  font-family: "Bebas Neue", cursive;
 }
-.play:not(:disabled):hover {
+.basic-button:not(:disabled):hover {
   transform: scale(1.05);
   background-color: inherit;
   color: white;
   font-weight: 700;
 }
-.play:disabled {
+.basic-button:disabled {
   background-color: #ddd;
   cursor: initial;
 }
@@ -145,4 +147,39 @@ label {
 }
 .hidden {
   display: none;
+}
+.won > p,
+.won {
+  background-color: lightgreen !important;
+}
+.draw > p,
+.draw {
+  background-color: #ccc;
+}
+
+@media all and (max-width: 550px) {
+  body > h1 {
+    font-size: 5rem;
+  }
+  body > p {
+    font-size: 2rem;
+  }
+  .button-chose {
+    font-size: 2rem;
+    width: 350px;
+  }
+  label,
+  .basic-button {
+    font-size: 1.5rem;
+  }
+  input[type="text"] {
+    font-size: 1.5rem;
+  }
+  .gameBoard {
+    width: 350px;
+    height: 350px;
+  }
+  .gameBoard > div {
+    font-size: 70px;
+  }
 }
