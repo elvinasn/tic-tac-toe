@@ -82,7 +82,7 @@ const GameController = (() => {
     return 0;
   };
 
-  function minimax(board, isMax) {
+  const minimax = (board, isMax) => {
     let score = evaluate(board);
 
     if (score == 10) return score;
@@ -118,9 +118,9 @@ const GameController = (() => {
       }
       return best;
     }
-  }
+  };
 
-  function findBestMove(board) {
+  const findBestMove = (board) => {
     let bestScore = -1000;
     bestMoveY = -1;
     bestMoveX = -1;
@@ -141,7 +141,7 @@ const GameController = (() => {
       }
     }
     return [bestMoveX, bestMoveY];
-  }
+  };
 
   const MoveAI = () => {
     setTimeout(() => {
