@@ -82,12 +82,12 @@ const GameController = (() => {
     return 0;
   };
 
-  const minimax = (board, isMax) => {
+  const minimax = (board, depth, isMax) => {
     let score = evaluate(board);
 
-    if (score == 10) return score;
+    if (score == 10) return score - depth;
 
-    if (score == -10) return score;
+    if (score == -10) return score - depth;
 
     if (GameBoard.checkIfDraw(board)) return 0;
 
@@ -98,7 +98,7 @@ const GameController = (() => {
         for (let j = 0; j < 3; j++) {
           if (board[i][j] == null) {
             board[i][j] = playerTwo;
-            best = Math.max(best, minimax(board, !isMax));
+            best = Math.max(best, minimax(board, depth + 1, !isMax));
             board[i][j] = null;
           }
         }
@@ -111,7 +111,7 @@ const GameController = (() => {
         for (let j = 0; j < 3; j++) {
           if (board[i][j] == null) {
             board[i][j] = playerOne;
-            best = Math.min(best, minimax(board, !isMax));
+            best = Math.min(best, minimax(board, depth + 1, !isMax));
             board[i][j] = null;
           }
         }
@@ -129,7 +129,7 @@ const GameController = (() => {
       for (let j = 0; j < 3; j++) {
         if (board[i][j] == null) {
           board[i][j] = playerTwo;
-          let moveScore = minimax(board, false);
+          let moveScore = minimax(board, 0, false);
           board[i][j] = null;
 
           if (moveScore > bestScore) {
@@ -173,7 +173,7 @@ const GameController = (() => {
       playerOne.changeTurn();
       playerTwo.changeTurn();
       displayController.displayTurn(playerOne, playerTwo);
-    }, 200);
+    }, 100);
   };
   return {
     beginGame,
